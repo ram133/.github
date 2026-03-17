@@ -1,0 +1,31 @@
+name: Autonomous Agency Runner
+
+on:
+  schedule:
+    # Runs every 6 hours (00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '0 */6 * * *'
+  workflow_dispatch: # Allows you to trigger it manually if needed
+
+jobs:
+  run-agency:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+
+      - name: Execute Autonomous Agent
+        run: python agency.py
+        env:
+          # Add any necessary secrets here in the repo settings later
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
