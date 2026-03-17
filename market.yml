@@ -1,0 +1,32 @@
+# https://github.com/ram133/2509/blob/main/.github/workflows/market.yml
+
+name: MarketSync
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+jobs:
+  update-metrics:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run Market Analysis
+        run: |
+          python scripts/market.py
+          
+      - name: Push Updates
+        run: |
+          git config --global user.name 'ram133'
+          git config --global user.email 'ram133@users.noreply.github.com'
+          git add data/trends.json
+          git commit -m "Sync market curves" || exit 0
+          git push
